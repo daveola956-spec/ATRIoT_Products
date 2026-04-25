@@ -163,9 +163,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Motion Scroll Reveal Logic ---
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const compactMotionView = window.matchMedia('(max-width: 800px)').matches;
 
-    if (!prefersReducedMotion && !compactMotionView) {
+    if (!prefersReducedMotion) {
         const image = document.querySelector('.scaler img');
         const scrollSection = document.querySelector('#ecosystem-reveal');
         const layers = document.querySelectorAll('.grid > .layer');
@@ -173,16 +172,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (image && scrollSection) {
             // Function to initialize scroll animations
             const initScrollAnimations = () => {
-                const rect = image.getBoundingClientRect();
                 const containerRect = document.querySelector('.grid').getBoundingClientRect();
                 
-                // Target width should be the width the image takes in the grid
-                const targetWidth = containerRect.width / 5; // since it spans 1 column in a 5-col grid
+                // On mobile we use 3 cols, desktop 5 cols. Target width matches 1 column.
+                const cols = window.innerWidth <= 800 ? 3 : 5;
+                const targetWidth = containerRect.width / cols; 
+                
                 const viewportWidth = window.innerWidth;
                 const viewportHeight = window.innerHeight;
                 
-                // Calculate startScale to cover the viewport
-                const startScale = Math.max(viewportWidth / (targetWidth || 1), viewportHeight / (targetWidth * 1.25 || 1)) * 1.2;
+                // Calculate startScale to overcover the viewport
+                const startScale = Math.max(viewportWidth / (targetWidth || 1), viewportHeight / (targetWidth * 1.25 || 1)) * 1.5;
 
                 // Shrink center image from oversized scale to native size.
                 scroll(
@@ -206,6 +206,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 ];
 
                 layers.forEach((layer, index) => {
+                    // Skip animating if the layer is hidden via CSS (e.g., layer 1 on mobile)
+                    if (window.getComputedStyle(layer).display === 'none') return;
+                    
                     const endOffset = `${1 - (index * 0.05)} end`;
 
                     // Fade in
@@ -238,20 +241,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             };
 
-            // Run once image is loaded to get accurate dimensions
-            if (image.complete) {
-                initScrollAnimations();
-            } else {
-                image.addEventListener('load', initScrollAnimations);
-            }
+            // Use requestAnimationFrame to ensure layout is ready
+            requestAnimationFrame(() => {
+                if (image.complete && image.naturalWidth > 0) {
+                    initScrollAnimations();
+                } else {
+                    image.addEventListener('load', initScrollAnimations, { once: true });
+                    // Fallback timeout in case loads from cache fail to fire event nicely
+                    setTimeout(initScrollAnimations, 500);
+                }
+            });
         }
-    }
- else {
-        // Keep ecosystem content fully visible without heavy scroll choreography on compact/reduced-motion views.
-        const layers = document.querySelectorAll('.grid > .layer');
-        layers.forEach(layer => {
-            layer.style.opacity = '1';
-            layer.style.transform = 'none';
-        });
     }
 });
