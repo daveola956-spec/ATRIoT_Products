@@ -17,6 +17,25 @@ const revealObserver = new IntersectionObserver((entries) => {
 }, observerOptions);
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Mobile navigation toggle
+    const nav = document.querySelector('.floating-nav');
+    const navToggle = document.querySelector('.nav-toggle');
+    const navLinks = document.querySelectorAll('.nav-links a');
+
+    if (nav && navToggle) {
+        navToggle.addEventListener('click', () => {
+            const isOpen = nav.classList.toggle('nav-open');
+            navToggle.setAttribute('aria-expanded', String(isOpen));
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                nav.classList.remove('nav-open');
+                navToggle.setAttribute('aria-expanded', 'false');
+            });
+        });
+    }
+
     // Basic reveals
     const revealElements = document.querySelectorAll('.reveal');
     revealElements.forEach(el => {
@@ -27,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Navbar state
-    const nav = document.querySelector('.floating-nav');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
             nav.style.background = 'rgba(15, 23, 42, 0.9)';
