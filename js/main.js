@@ -154,8 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = document.createElement('img');
             img.src = source;
             img.alt = `ATRIoT Internet product image ${index + 1}`;
-            img.loading = 'lazy';
-            img.decoding = 'async';
+            img.decoding = 'sync';
             img.classList.add('js-open-image');
             img.dataset.galleryIndex = String(index);
 
