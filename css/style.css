@@ -282,17 +282,17 @@ h1 {
 /* Gallery track items no longer need a header */
 
 .hero-gallery-track {
-    height: 480px;
+    height: 400px;
     overflow-x: auto;
     overflow-y: hidden;
     display: flex;
     flex-direction: row;
-    gap: 2rem;
+    gap: 1.5rem;
     scroll-snap-type: x mandatory;
-    scrollbar-width: none; /* Clean flowing look */
+    scrollbar-width: none;
     -ms-overflow-style: none;
     -webkit-overflow-scrolling: touch;
-    width: 100vw; /* Bleed effect */
+    width: 100vw;
     max-width: 1400px;
 }
 
@@ -300,28 +300,16 @@ h1 {
     display: none;
 }
 
-.hero-gallery-track::-webkit-scrollbar {
-    width: 8px;
-}
-
-.hero-gallery-track::-webkit-scrollbar-track {
-    background: rgba(30, 41, 59, 0.35);
-    border-radius: 999px;
-}
-
-.hero-gallery-track::-webkit-scrollbar-thumb {
-    background: rgba(56, 189, 248, 0.45);
-    border-radius: 999px;
-}
+/* Removed previous scrollbar custom styles to ensure hidden track */
 
 .hero-gallery-item {
     position: relative;
-    flex: 0 0 85%; /* Shows a peek of the next image */
-    width: 85%;
+    flex: 0 0 340px; /* Use fixed width to avoid 'stretched' look */
+    width: 340px;
     height: 100%;
-    border-radius: 0.95rem;
+    border-radius: 1.25rem;
     overflow: hidden;
-    scroll-snap-align: center;
+    scroll-snap-align: start;
 }
 
 .hero-gallery-item img {
@@ -329,9 +317,9 @@ h1 {
     height: 100%;
     object-fit: cover;
     display: block;
-    border-radius: 0.95rem;
-    border: 1px solid rgba(148, 163, 184, 0.28);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    border-radius: 1.25rem;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.45);
     cursor: zoom-in;
     transition: transform var(--transition-fast);
 }
