@@ -82,22 +82,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
             card.appendChild(image);
             heroGalleryTrack.appendChild(card);
-
-            const dot = document.createElement('button');
-            dot.type = 'button';
-            dot.className = 'hero-gallery-dot';
-            dot.setAttribute('aria-label', `View gallery image ${index + 1}`);
-            dot.dataset.galleryIndex = String(index);
-            heroGalleryDots.appendChild(dot);
         });
 
         const galleryItems = Array.from(heroGalleryTrack.querySelectorAll('.hero-gallery-item'));
-        const galleryDots = Array.from(heroGalleryDots.querySelectorAll('.hero-gallery-dot'));
 
-        const setActiveDot = (activeIndex) => {
-            galleryDots.forEach((dot, dotIndex) => {
-                dot.classList.toggle('is-active', dotIndex === activeIndex);
-            });
+        const activePill = document.createElement('span');
+        activePill.className = 'hero-gallery-dot is-active';
+        activePill.setAttribute('aria-hidden', 'true');
+
+        const counter = document.createElement('span');
+        counter.className = 'hero-gallery-counter';
+
+        heroGalleryDots.appendChild(activePill);
+        heroGalleryDots.appendChild(counter);
+
+        const setActiveIndicator = (activeIndex) => {
+            counter.textContent = `${activeIndex + 1} / ${galleryItems.length}`;
         };
 
         const getClosestIndex = () => {
@@ -117,26 +117,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return closestIndex;
         };
 
-        setActiveDot(0);
+        setActiveIndicator(0);
 
         let ticking = false;
         heroGalleryTrack.addEventListener('scroll', () => {
             if (ticking) return;
             ticking = true;
             window.requestAnimationFrame(() => {
-                setActiveDot(getClosestIndex());
+                setActiveIndicator(getClosestIndex());
                 ticking = false;
-            });
-        });
-
-        galleryDots.forEach((dot) => {
-            dot.addEventListener('click', () => {
-                const index = Number(dot.dataset.galleryIndex || '0');
-                const target = galleryItems[index];
-                if (!target) return;
-                const targetTop = target.offsetTop - ((heroGalleryTrack.clientHeight - target.clientHeight) / 2);
-                heroGalleryTrack.scrollTo({ top: targetTop, behavior: 'smooth' });
-                setActiveDot(index);
             });
         });
     }

@@ -346,27 +346,29 @@ h1 {
 .hero-gallery-dots {
     margin-top: 0.8rem;
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
+    gap: 0.55rem;
     align-items: center;
 }
 
 .hero-gallery-dot {
-    width: 8px;
+    width: 26px;
     height: 8px;
-    border-radius: 50%;
+    border-radius: 999px;
     border: 0;
-    background: rgba(148, 163, 184, 0.42);
-    cursor: pointer;
-    transition: transform var(--transition-fast), background var(--transition-fast);
+    background: rgba(56, 189, 248, 0.85);
+    transition: transform var(--transition-fast), opacity var(--transition-fast);
 }
 
 .hero-gallery-dot.is-active {
-    background: var(--accent);
-    transform: scale(1.35);
+    transform: none;
 }
 
-.hero-gallery-dot:focus-visible,
+.hero-gallery-counter {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+}
+
 .hero-gallery-item img:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
