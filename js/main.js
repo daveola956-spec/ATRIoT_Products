@@ -216,70 +216,82 @@ document.addEventListener('DOMContentLoaded', () => {
         const layers = document.querySelectorAll('.grid > .layer');
 
         if (image && scrollSection) {
-            // Measure current size and compute a scale start point to avoid aspect-ratio distortion.
-            const rect = image.getBoundingClientRect();
-            const naturalWidth = rect.width || image.offsetWidth;
-            const naturalHeight = rect.height || image.offsetHeight;
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-            const startScale = Math.max(
-                viewportWidth / Math.max(naturalWidth, 1),
-                viewportHeight / Math.max(naturalHeight, 1)
-            );
+            // Function to initialize scroll animations
+            const initScrollAnimations = () => {
+                const rect = image.getBoundingClientRect();
+                const containerRect = document.querySelector('.grid').getBoundingClientRect();
+                
+                // Target width should be the width the image takes in the grid
+                const targetWidth = containerRect.width / 5; // since it spans 1 column in a 5-col grid
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                
+                // Calculate startScale to cover the viewport
+                const startScale = Math.max(viewportWidth / (targetWidth || 1), viewportHeight / (targetWidth * 1.25 || 1)) * 1.2;
 
-            // Shrink center image from oversized scale to native size.
-            scroll(
-                animate(image, {
-                    scale: [startScale, 1]
-                }, {
-                    easing: cubicBezier(0.65, 0, 0.35, 1)
-                }),
-                {
-                    target: scrollSection,
-                    offset: ['start start', '80% end']
-                }
-            );
-
-            // Animate each layer staggered
-            const scaleEasings = [
-                cubicBezier(0.42, 0, 0.58, 1),
-                cubicBezier(0.76, 0, 0.24, 1),
-                cubicBezier(0.87, 0, 0.13, 1)
-            ];
-
-            layers.forEach((layer, index) => {
-                const endOffset = `${1 - (index * 0.05)} end`;
-
-                // Fade in
+                // Shrink center image from oversized scale to native size.
                 scroll(
-                    animate(layer, {
-                        opacity: [0, 0, 1]
+                    animate(image, {
+                        scale: [startScale, 1],
+                        borderRadius: ['0rem', '1.5rem']
                     }, {
-                        offset: [0, 0.55, 1],
-                        easing: cubicBezier(0.61, 1, 0.88, 1)
+                        easing: cubicBezier(0.65, 0, 0.35, 1)
                     }),
                     {
                         target: scrollSection,
-                        offset: ['start start', endOffset]
+                        offset: ['start start', '80% end']
                     }
                 );
 
-                // Scale in
-                scroll(
-                    animate(layer, {
-                        scale: [0, 0, 1]
-                    }, {
-                        offset: [0, 0.3, 1],
-                        easing: scaleEasings[index]
-                    }),
-                    {
-                        target: scrollSection,
-                        offset: ['start start', endOffset]
-                    }
-                );
-            });
+                // Animate each layer staggered
+                const scaleEasings = [
+                    cubicBezier(0.42, 0, 0.58, 1),
+                    cubicBezier(0.76, 0, 0.24, 1),
+                    cubicBezier(0.87, 0, 0.13, 1)
+                ];
+
+                layers.forEach((layer, index) => {
+                    const endOffset = `${1 - (index * 0.05)} end`;
+
+                    // Fade in
+                    scroll(
+                        animate(layer, {
+                            opacity: [0, 0, 1]
+                        }, {
+                            offset: [0, 0.55, 1],
+                            easing: cubicBezier(0.61, 1, 0.88, 1)
+                        }),
+                        {
+                            target: scrollSection,
+                            offset: ['start start', endOffset]
+                        }
+                    );
+
+                    // Scale in
+                    scroll(
+                        animate(layer, {
+                            scale: [0.4, 1]
+                        }, {
+                            offset: [0.3, 1],
+                            easing: scaleEasings[index]
+                        }),
+                        {
+                            target: scrollSection,
+                            offset: ['start start', endOffset]
+                        }
+                    );
+                });
+            };
+
+            // Run once image is loaded to get accurate dimensions
+            if (image.complete) {
+                initScrollAnimations();
+            } else {
+                image.addEventListener('load', initScrollAnimations);
+            }
         }
-    } else {
+    }
+ else {
         // Keep ecosystem content fully visible without heavy scroll choreography on compact/reduced-motion views.
         const layers = document.querySelectorAll('.grid > .layer');
         layers.forEach(layer => {
