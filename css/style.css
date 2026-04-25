@@ -852,6 +852,7 @@ h1 {
     position: relative;
     grid-area: 2 / calc(3 + var(--offset));
     z-index: 10;
+    transform-origin: center center; /* Ensures scale animation radiates from cell centre */
 }
 
 .scaler img {

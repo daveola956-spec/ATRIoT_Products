@@ -165,11 +165,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (!prefersReducedMotion) {
+        const scaler = document.querySelector('.scaler');
         const image = document.querySelector('.scaler img');
         const scrollSection = document.querySelector('#ecosystem-reveal');
         const layers = document.querySelectorAll('.grid > .layer');
 
-        if (image && scrollSection) {
+        if (scaler && scrollSection) {
             // Function to initialize scroll animations
             const initScrollAnimations = () => {
                 const containerRect = document.querySelector('.grid').getBoundingClientRect();
@@ -186,11 +187,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const isMobile = window.innerWidth <= 800;
 
-                // Shrink center image from oversized scale to native size.
-                // On mobile we extend the end offset so the image doesn't vanish early.
+                // Animate the .scaler WRAPPER — not the img — so Motion never
+                // overwrites the img's translate(-50%,-50%) centering transform.
+                scroll(
+                    animate(scaler, {
+                        scale: [startScale, 1]
+                    }, {
+                        easing: cubicBezier(0.65, 0, 0.35, 1)
+                    }),
+                    {
+                        target: scrollSection,
+                        offset: ['start start', isMobile ? '65% end' : '80% end']
+                    }
+                );
+
+                // Animate border-radius separately on the image (safe — no translate conflict)
                 scroll(
                     animate(image, {
-                        scale: [startScale, 1],
                         borderRadius: ['0rem', '1.5rem']
                     }, {
                         easing: cubicBezier(0.65, 0, 0.35, 1)
@@ -249,12 +262,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Use requestAnimationFrame to ensure layout is ready
             requestAnimationFrame(() => {
-                if (image.complete && image.naturalWidth > 0) {
+                if (image && image.complete && image.naturalWidth > 0) {
                     initScrollAnimations();
-                } else {
+                } else if (image) {
                     image.addEventListener('load', initScrollAnimations, { once: true });
-                    // Fallback timeout in case loads from cache fail to fire event nicely
                     setTimeout(initScrollAnimations, 500);
+                } else {
+                    initScrollAnimations();
                 }
             });
         }
