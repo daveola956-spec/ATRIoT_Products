@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return list.indexOf(source) === index;
     });
 
-    if (heroGalleryTrack && heroGalleryDots) {
+    if (heroGalleryTrack) {
         uniqueHeroImages.forEach((source, index) => {
             const card = document.createElement('article');
             card.className = 'hero-gallery-item';
@@ -82,51 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             card.appendChild(image);
             heroGalleryTrack.appendChild(card);
-        });
-
-        const galleryItems = Array.from(heroGalleryTrack.querySelectorAll('.hero-gallery-item'));
-
-        const activePill = document.createElement('span');
-        activePill.className = 'hero-gallery-dot is-active';
-        activePill.setAttribute('aria-hidden', 'true');
-
-        const counter = document.createElement('span');
-        counter.className = 'hero-gallery-counter';
-
-        heroGalleryDots.appendChild(activePill);
-        heroGalleryDots.appendChild(counter);
-
-        const setActiveIndicator = (activeIndex) => {
-            counter.textContent = `${activeIndex + 1} / ${galleryItems.length}`;
-        };
-
-        const getClosestIndex = () => {
-            const trackCenter = heroGalleryTrack.scrollLeft + (heroGalleryTrack.clientWidth / 2);
-            let closestIndex = 0;
-            let closestDistance = Number.POSITIVE_INFINITY;
-
-            galleryItems.forEach((item, itemIndex) => {
-                const itemCenter = item.offsetLeft + (item.clientWidth / 2);
-                const distance = Math.abs(itemCenter - trackCenter);
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closestIndex = itemIndex;
-                }
-            });
-
-            return closestIndex;
-        };
-
-        setActiveIndicator(0);
-
-        let ticking = false;
-        heroGalleryTrack.addEventListener('scroll', () => {
-            if (ticking) return;
-            ticking = true;
-            window.requestAnimationFrame(() => {
-                setActiveIndicator(getClosestIndex());
-                ticking = false;
-            });
         });
     }
 

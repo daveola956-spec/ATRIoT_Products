@@ -262,13 +262,9 @@ h1 {
     gap: 1.5rem;
 }
 
-.hero-gallery {
+.hero-gallery-container {
     position: relative;
-    border-radius: 1.25rem;
-    border: 1px solid rgba(148, 163, 184, 0.22);
-    background: rgba(15, 23, 42, 0.55);
-    padding: 1rem;
-    backdrop-filter: blur(8px);
+    width: 100%;
 }
 
 .glow-sphere {
@@ -283,36 +279,25 @@ h1 {
     z-index: -1;
 }
 
-.hero-gallery-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 1rem;
-    margin-bottom: 0.75rem;
-}
-
-.hero-gallery-head strong {
-    font-size: 0.95rem;
-    font-weight: 700;
-}
-
-.hero-gallery-head span {
-    font-size: 0.78rem;
-    color: var(--text-muted);
-}
+/* Gallery track items no longer need a header */
 
 .hero-gallery-track {
-    height: 400px;
+    height: 480px;
     overflow-x: auto;
     overflow-y: hidden;
-    padding-bottom: 0.5rem;
     display: flex;
     flex-direction: row;
-    gap: 1.25rem;
+    gap: 2rem;
     scroll-snap-type: x mandatory;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(56, 189, 248, 0.4) rgba(30, 41, 59, 0.35);
+    scrollbar-width: none; /* Clean flowing look */
+    -ms-overflow-style: none;
     -webkit-overflow-scrolling: touch;
+    width: 100vw; /* Bleed effect */
+    max-width: 1400px;
+}
+
+.hero-gallery-track::-webkit-scrollbar {
+    display: none;
 }
 
 .hero-gallery-track::-webkit-scrollbar {
@@ -355,31 +340,7 @@ h1 {
     transform: scale(1.02);
 }
 
-.hero-gallery-dots {
-    margin-top: 0.8rem;
-    display: flex;
-    gap: 0.55rem;
-    align-items: center;
-}
-
-.hero-gallery-dot {
-    width: 26px;
-    height: 8px;
-    border-radius: 999px;
-    border: 0;
-    background: rgba(56, 189, 248, 0.85);
-    transition: transform var(--transition-fast), opacity var(--transition-fast);
-}
-
-.hero-gallery-dot.is-active {
-    transform: none;
-}
-
-.hero-gallery-counter {
-    font-size: 0.78rem;
-    color: var(--text-muted);
-    letter-spacing: 0.02em;
-}
+/* Removed dots and counter */
 
 .hero-gallery-item img:focus-visible {
     outline: 2px solid var(--accent);
