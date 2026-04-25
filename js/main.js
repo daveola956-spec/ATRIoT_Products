@@ -83,6 +83,58 @@ document.addEventListener('DOMContentLoaded', () => {
             card.appendChild(image);
             heroGalleryTrack.appendChild(card);
         });
+
+        // --- Auto-scroll logic ---
+        const galleryItems = Array.from(heroGalleryTrack.querySelectorAll('.hero-gallery-item'));
+        let currentIndex = 0;
+        let autoScrollTimer = null;
+        let resumeTimer = null;
+        let isUserScrolling = false;
+
+        const scrollToIndex = (index) => {
+            const target = galleryItems[index];
+            if (!target) return;
+            // Smooth scroll the item into the start of the track
+            heroGalleryTrack.scrollTo({
+                left: target.offsetLeft,
+                behavior: 'smooth'
+            });
+        };
+
+        const startAutoScroll = () => {
+            if (autoScrollTimer) clearInterval(autoScrollTimer);
+            autoScrollTimer = setInterval(() => {
+                if (isUserScrolling) return;
+                currentIndex = (currentIndex + 1) % galleryItems.length;
+                scrollToIndex(currentIndex);
+            }, 3500); // Advance every 3.5 seconds
+        };
+
+        const pauseAndResume = () => {
+            isUserScrolling = true;
+            if (resumeTimer) clearTimeout(resumeTimer);
+            // Resume auto-scroll 6 seconds after the user stops interacting
+            resumeTimer = setTimeout(() => {
+                isUserScrolling = false;
+                // Sync currentIndex to wherever the user scrolled to
+                const trackCenter = heroGalleryTrack.scrollLeft + heroGalleryTrack.clientWidth / 2;
+                let closest = 0;
+                let minDist = Infinity;
+                galleryItems.forEach((item, i) => {
+                    const dist = Math.abs(item.offsetLeft + item.clientWidth / 2 - trackCenter);
+                    if (dist < minDist) { minDist = dist; closest = i; }
+                });
+                currentIndex = closest;
+            }, 6000);
+        };
+
+        // Pause on any user interaction with the track
+        heroGalleryTrack.addEventListener('scroll', pauseAndResume, { passive: true });
+        heroGalleryTrack.addEventListener('touchstart', pauseAndResume, { passive: true });
+        heroGalleryTrack.addEventListener('mousedown', pauseAndResume);
+
+        // Start auto-scroll after a short delay to let images load
+        setTimeout(startAutoScroll, 1500);
     }
 
     // Shared image lightbox (hero gallery + ecosystem images)
