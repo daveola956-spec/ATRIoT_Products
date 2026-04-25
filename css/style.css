@@ -757,11 +757,26 @@ h1 {
 
 .socials {
     display: flex;
-    gap: 2rem;
+    gap: 1.5rem;
+}
+
+.socials a {
+    color: var(--text-muted);
+    transition: color 0.2s ease, transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.socials a svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
 }
 
 .socials a:hover {
     color: var(--accent);
+    transform: translateY(-2px);
 }
 
 /* Immersive Motion Reveal Section */
