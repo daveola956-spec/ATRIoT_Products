@@ -36,6 +36,61 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Ecosystem image lightbox
+    const lightbox = document.querySelector('#image-lightbox');
+    const lightboxImage = document.querySelector('.lightbox-image');
+    const lightboxClose = document.querySelector('.lightbox-close');
+    const ecosystemImages = document.querySelectorAll('#ecosystem-reveal .grid img');
+
+    const openLightbox = (src, alt) => {
+        if (!lightbox || !lightboxImage) return;
+        lightboxImage.src = src;
+        lightboxImage.alt = alt || 'Expanded image preview';
+        lightbox.classList.add('is-open');
+        lightbox.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('lightbox-open');
+    };
+
+    const closeLightbox = () => {
+        if (!lightbox || !lightboxImage) return;
+        lightbox.classList.remove('is-open');
+        lightbox.setAttribute('aria-hidden', 'true');
+        lightboxImage.src = '';
+        document.body.classList.remove('lightbox-open');
+    };
+
+    ecosystemImages.forEach(image => {
+        image.tabIndex = 0;
+        image.setAttribute('role', 'button');
+        image.setAttribute('aria-label', `${image.alt || 'Image'} - open full size`);
+
+        image.addEventListener('click', () => openLightbox(image.src, image.alt));
+        image.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                openLightbox(image.src, image.alt);
+            }
+        });
+    });
+
+    if (lightboxClose) {
+        lightboxClose.addEventListener('click', closeLightbox);
+    }
+
+    if (lightbox) {
+        lightbox.addEventListener('click', (event) => {
+            if (event.target === lightbox) {
+                closeLightbox();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && lightbox && lightbox.classList.contains('is-open')) {
+            closeLightbox();
+        }
+    });
+
     // Basic reveals
     const revealElements = document.querySelectorAll('.reveal');
     revealElements.forEach(el => {
