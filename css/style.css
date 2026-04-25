@@ -1035,11 +1035,11 @@ body.lightbox-open {
     }
 
     .hero-gallery-track {
-        height: min(54vh, 420px);
+        height: 350px;
     }
 
     .hero-gallery-item img {
-        height: 180px;
+        height: 100%;
     }
 
     .trust-intro {
