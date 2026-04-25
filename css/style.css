@@ -676,6 +676,54 @@ h1 {
     outline-offset: 2px;
 }
 
+/* ATRIoT + Unlimited Internet */
+.internet-section {
+    padding: 120px 0;
+    position: relative;
+}
+
+.internet-section h2 {
+    font-size: clamp(2rem, 4.5vw, 3.2rem);
+    line-height: 1.1;
+    margin-bottom: 1.25rem;
+}
+
+.internet-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-top: 1.75rem;
+}
+
+.internet-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.internet-icon {
+    color: var(--accent);
+    font-size: 0.55rem;
+    margin-top: 0.45rem;
+    flex-shrink: 0;
+    opacity: 0.85;
+}
+
+.internet-features strong {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.2rem;
+}
+
+.internet-features span {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
 /* Final CTA */
 .final-cta {
     padding: 0 0 120px;

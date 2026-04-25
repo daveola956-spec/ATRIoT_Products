@@ -137,6 +137,76 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(startAutoScroll, 1500);
     }
 
+    // --- ATRIoT + Unlimited Internet Gallery ---
+    const internetGalleryTrack = document.querySelector('#internet-gallery-track');
+    const internetImageSources = [
+        'assets/images/1.png',
+        'assets/images/2.png',
+        'assets/images/3.png',
+        'assets/images/4.png'
+    ];
+
+    if (internetGalleryTrack) {
+        internetImageSources.forEach((source, index) => {
+            const card = document.createElement('article');
+            card.className = 'hero-gallery-item';
+
+            const img = document.createElement('img');
+            img.src = source;
+            img.alt = `ATRIoT Internet product image ${index + 1}`;
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.classList.add('js-open-image');
+            img.dataset.galleryIndex = String(index);
+
+            card.appendChild(img);
+            internetGalleryTrack.appendChild(card);
+        });
+
+        // Auto-scroll — identical behaviour to the hero gallery
+        const inetItems = Array.from(internetGalleryTrack.querySelectorAll('.hero-gallery-item'));
+        let inetIndex = 0;
+        let inetTimer = null;
+        let inetResumeTimer = null;
+        let inetUserScrolling = false;
+
+        const inetScrollTo = (index) => {
+            const target = inetItems[index];
+            if (!target) return;
+            internetGalleryTrack.scrollTo({ left: target.offsetLeft, behavior: 'smooth' });
+        };
+
+        const startInetAutoScroll = () => {
+            if (inetTimer) clearInterval(inetTimer);
+            inetTimer = setInterval(() => {
+                if (inetUserScrolling) return;
+                inetIndex = (inetIndex + 1) % inetItems.length;
+                inetScrollTo(inetIndex);
+            }, 3500);
+        };
+
+        const inetPauseResume = () => {
+            inetUserScrolling = true;
+            if (inetResumeTimer) clearTimeout(inetResumeTimer);
+            inetResumeTimer = setTimeout(() => {
+                inetUserScrolling = false;
+                const center = internetGalleryTrack.scrollLeft + internetGalleryTrack.clientWidth / 2;
+                let closest = 0, minDist = Infinity;
+                inetItems.forEach((item, i) => {
+                    const dist = Math.abs(item.offsetLeft + item.clientWidth / 2 - center);
+                    if (dist < minDist) { minDist = dist; closest = i; }
+                });
+                inetIndex = closest;
+            }, 6000);
+        };
+
+        internetGalleryTrack.addEventListener('scroll', inetPauseResume, { passive: true });
+        internetGalleryTrack.addEventListener('touchstart', inetPauseResume, { passive: true });
+        internetGalleryTrack.addEventListener('mousedown', inetPauseResume);
+
+        setTimeout(startInetAutoScroll, 2000); // Slightly offset from hero to avoid simultaneous ticks
+    }
+
     // Shared image lightbox (hero gallery + ecosystem images)
     const lightbox = document.querySelector('#image-lightbox');
     const lightboxImage = document.querySelector('.lightbox-image');
