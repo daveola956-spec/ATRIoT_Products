@@ -36,11 +36,116 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Ecosystem image lightbox
+    // Hero gallery generation (unique images only)
+    const heroGalleryTrack = document.querySelector('#hero-gallery-track');
+    const heroGalleryDots = document.querySelector('#hero-gallery-dots');
+    const heroImageSources = [
+        'assets/images/ac-controller.png',
+        'assets/images/app-energy.png',
+        'assets/images/app-thermostat.png',
+        'assets/images/atriot-scene-01.png',
+        'assets/images/atriot-scene-02.png',
+        'assets/images/atriot-scene-03.png',
+        'assets/images/atriot-scene-04.png',
+        'assets/images/atriot-scene-05.png',
+        'assets/images/ChatGPT Image Apr 24, 2026, 04_47_34 PM.png',
+        'assets/images/ChatGPT Image Apr 24, 2026, 06_09_00 PM.png',
+        'assets/images/ChatGPT Image Apr 24, 2026, 06_09_08 PM.png',
+        'assets/images/ChatGPT Image Apr 24, 2026, 06_37_25 PM.png',
+        'assets/images/ChatGPT Image Apr 24, 2026, 11_22_02 PM.png',
+        'assets/images/ChatGPT Image Apr 24, 2026, 11_27_34 PM.png',
+        'assets/images/energy-hub.png',
+        'assets/images/fan-controller.png',
+        'assets/images/future-homes-banner.png',
+        'assets/images/Gemini_Generated_Image_2stxyd2stxyd2stx.png',
+        'assets/images/Gemini_Generated_Image_9sc4t69sc4t69sc4.png',
+        'assets/images/Gemini_Generated_Image_jzh4fwjzh4fwjzh4.png',
+        'assets/images/Gemini_Generated_Image_rio3d7rio3d7rio3.png'
+    ];
+
+    const uniqueHeroImages = heroImageSources.filter((source, index, list) => {
+        return list.indexOf(source) === index;
+    });
+
+    if (heroGalleryTrack && heroGalleryDots) {
+        uniqueHeroImages.forEach((source, index) => {
+            const card = document.createElement('article');
+            card.className = 'hero-gallery-item';
+
+            const image = document.createElement('img');
+            image.src = source;
+            image.alt = `ATRIoT gallery image ${index + 1}`;
+            image.loading = 'lazy';
+            image.decoding = 'async';
+            image.classList.add('js-open-image');
+            image.dataset.galleryIndex = String(index);
+
+            card.appendChild(image);
+            heroGalleryTrack.appendChild(card);
+
+            const dot = document.createElement('button');
+            dot.type = 'button';
+            dot.className = 'hero-gallery-dot';
+            dot.setAttribute('aria-label', `View gallery image ${index + 1}`);
+            dot.dataset.galleryIndex = String(index);
+            heroGalleryDots.appendChild(dot);
+        });
+
+        const galleryItems = Array.from(heroGalleryTrack.querySelectorAll('.hero-gallery-item'));
+        const galleryDots = Array.from(heroGalleryDots.querySelectorAll('.hero-gallery-dot'));
+
+        const setActiveDot = (activeIndex) => {
+            galleryDots.forEach((dot, dotIndex) => {
+                dot.classList.toggle('is-active', dotIndex === activeIndex);
+            });
+        };
+
+        const getClosestIndex = () => {
+            const trackCenter = heroGalleryTrack.scrollTop + (heroGalleryTrack.clientHeight / 2);
+            let closestIndex = 0;
+            let closestDistance = Number.POSITIVE_INFINITY;
+
+            galleryItems.forEach((item, itemIndex) => {
+                const itemCenter = item.offsetTop + (item.clientHeight / 2);
+                const distance = Math.abs(itemCenter - trackCenter);
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestIndex = itemIndex;
+                }
+            });
+
+            return closestIndex;
+        };
+
+        setActiveDot(0);
+
+        let ticking = false;
+        heroGalleryTrack.addEventListener('scroll', () => {
+            if (ticking) return;
+            ticking = true;
+            window.requestAnimationFrame(() => {
+                setActiveDot(getClosestIndex());
+                ticking = false;
+            });
+        });
+
+        galleryDots.forEach((dot) => {
+            dot.addEventListener('click', () => {
+                const index = Number(dot.dataset.galleryIndex || '0');
+                const target = galleryItems[index];
+                if (!target) return;
+                const targetTop = target.offsetTop - ((heroGalleryTrack.clientHeight - target.clientHeight) / 2);
+                heroGalleryTrack.scrollTo({ top: targetTop, behavior: 'smooth' });
+                setActiveDot(index);
+            });
+        });
+    }
+
+    // Shared image lightbox (hero gallery + ecosystem images)
     const lightbox = document.querySelector('#image-lightbox');
     const lightboxImage = document.querySelector('.lightbox-image');
     const lightboxClose = document.querySelector('.lightbox-close');
-    const ecosystemImages = document.querySelectorAll('#ecosystem-reveal .grid img');
+    const interactiveImages = document.querySelectorAll('#ecosystem-reveal .grid img, .js-open-image, #energy .mobile-mockup img');
 
     const openLightbox = (src, alt) => {
         if (!lightbox || !lightboxImage) return;
@@ -59,7 +164,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.remove('lightbox-open');
     };
 
-    ecosystemImages.forEach(image => {
+    interactiveImages.forEach(image => {
+        image.classList.add('js-open-image');
         image.tabIndex = 0;
         image.setAttribute('role', 'button');
         image.setAttribute('aria-label', `${image.alt || 'Image'} - open full size`);
@@ -113,27 +219,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Motion Scroll Reveal Logic ---
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const compactMotionView = window.matchMedia('(max-width: 800px)').matches;
 
-    if (!prefersReducedMotion) {
+    if (!prefersReducedMotion && !compactMotionView) {
         const image = document.querySelector('.scaler img');
         const scrollSection = document.querySelector('#ecosystem-reveal');
         const layers = document.querySelectorAll('.grid > .layer');
 
         if (image && scrollSection) {
-            // Measure natural size
-            const naturalWidth = image.offsetWidth;
-            const naturalHeight = image.offsetHeight;
+            // Measure current size and compute a scale start point to avoid aspect-ratio distortion.
+            const rect = image.getBoundingClientRect();
+            const naturalWidth = rect.width || image.offsetWidth;
+            const naturalHeight = rect.height || image.offsetHeight;
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
+            const startScale = Math.max(
+                viewportWidth / Math.max(naturalWidth, 1),
+                viewportHeight / Math.max(naturalHeight, 1)
+            );
 
-            // Shrink center image from full screen to grid size
+            // Shrink center image from oversized scale to native size.
             scroll(
                 animate(image, {
-                    width: [viewportWidth, naturalWidth],
-                    height: [viewportHeight, naturalHeight]
+                    scale: [startScale, 1]
                 }, {
-                    width: { easing: cubicBezier(0.65, 0, 0.35, 1) },
-                    height: { easing: cubicBezier(0.42, 0, 0.58, 1) }
+                    easing: cubicBezier(0.65, 0, 0.35, 1)
                 }),
                 {
                     target: scrollSection,
@@ -180,5 +290,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 );
             });
         }
+    } else {
+        // Keep ecosystem content fully visible without heavy scroll choreography on compact/reduced-motion views.
+        const layers = document.querySelectorAll('.grid > .layer');
+        layers.forEach(layer => {
+            layer.style.opacity = '1';
+            layer.style.transform = 'none';
+        });
     }
 });

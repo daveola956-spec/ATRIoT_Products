@@ -262,8 +262,13 @@ h1 {
     gap: 1.5rem;
 }
 
-.hero-image {
+.hero-gallery {
     position: relative;
+    border-radius: 1.25rem;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    background: rgba(15, 23, 42, 0.55);
+    padding: 1rem;
+    backdrop-filter: blur(8px);
 }
 
 .glow-sphere {
@@ -278,9 +283,93 @@ h1 {
     z-index: -1;
 }
 
-.main-img {
-    border-radius: 2rem;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+.hero-gallery-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.hero-gallery-head strong {
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.hero-gallery-head span {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.hero-gallery-track {
+    height: min(66vh, 560px);
+    overflow-y: auto;
+    padding-right: 0.4rem;
+    display: grid;
+    gap: 0.75rem;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(56, 189, 248, 0.4) rgba(30, 41, 59, 0.35);
+}
+
+.hero-gallery-track::-webkit-scrollbar {
+    width: 8px;
+}
+
+.hero-gallery-track::-webkit-scrollbar-track {
+    background: rgba(30, 41, 59, 0.35);
+    border-radius: 999px;
+}
+
+.hero-gallery-track::-webkit-scrollbar-thumb {
+    background: rgba(56, 189, 248, 0.45);
+    border-radius: 999px;
+}
+
+.hero-gallery-item {
+    position: relative;
+    border-radius: 0.95rem;
+    overflow: hidden;
+    scroll-snap-align: center;
+}
+
+.hero-gallery-item img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 0.95rem;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    cursor: zoom-in;
+}
+
+.hero-gallery-dots {
+    margin-top: 0.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+.hero-gallery-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 0;
+    background: rgba(148, 163, 184, 0.42);
+    cursor: pointer;
+    transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.hero-gallery-dot.is-active {
+    background: var(--accent);
+    transform: scale(1.35);
+}
+
+.hero-gallery-dot:focus-visible,
+.hero-gallery-item img:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
 }
 
 /* Trust Strip */
@@ -618,6 +707,12 @@ h1 {
 
 .mobile-mockup img {
     border-radius: 1.5rem;
+    cursor: zoom-in;
+}
+
+.mobile-mockup img:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
 }
 
 /* Final CTA */
@@ -666,7 +761,7 @@ h1 {
 }
 
 #ecosystem-reveal {
-    min-height: 300vh; /* Scroll space */
+    min-height: 260vh; /* Scroll space */
     position: relative;
     background: #000;
 }
@@ -754,6 +849,13 @@ h1 {
     grid-template-columns: subgrid;
     grid-template-rows: subgrid;
     opacity: 0;
+}
+
+@supports not (grid-template-columns: subgrid) {
+    .layer {
+        grid-template-columns: repeat(5, 1fr);
+        grid-template-rows: repeat(3, auto);
+    }
 }
 
 /* Layer 1: Outer edges */
@@ -865,10 +967,28 @@ body.lightbox-open {
 }
 
 @media (max-width: 800px) {
+    #ecosystem-reveal {
+        min-height: 170vh;
+    }
+
+    .sticky-container {
+        position: relative;
+        top: auto;
+    }
+
     .grid {
         grid-template-columns: repeat(3, 1fr);
+        max-width: calc(100% - 2rem);
+        --gap: clamp(8px, 4vw, 20px);
         --offset: -1;
     }
+
+    @supports not (grid-template-columns: subgrid) {
+        .layer {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
     .layer:nth-of-type(1) { display: none; }
 }
 
@@ -886,6 +1006,11 @@ body.lightbox-open {
     
     .hero-btns {
         justify-content: center;
+    }
+
+    .hero-gallery {
+        max-width: 720px;
+        margin: 0 auto;
     }
 
     .hero-metrics {
@@ -946,6 +1071,14 @@ body.lightbox-open {
         grid-template-columns: 1fr;
     }
 
+    .hero-gallery-track {
+        height: min(54vh, 420px);
+    }
+
+    .hero-gallery-item img {
+        height: 180px;
+    }
+
     .trust-intro {
         flex-direction: column;
         align-items: flex-start;
@@ -978,5 +1111,22 @@ body.lightbox-open {
 @media (prefers-reduced-motion: reduce) {
     .trust-marquee-inner {
         animation: none;
+    }
+
+    #ecosystem-reveal {
+        min-height: 140vh;
+    }
+
+    .sticky-container {
+        position: relative;
+        top: auto;
+    }
+
+    .layer {
+        opacity: 1;
+    }
+
+    .scaler img {
+        transform: translate(-50%, -50%);
     }
 }
