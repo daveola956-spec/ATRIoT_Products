@@ -722,7 +722,7 @@ h1 {
 }
 
 #ecosystem-reveal {
-    min-height: 260vh; /* Scroll space */
+    min-height: 300vh; /* Desktop scroll space — generous for slow scrollers */
     position: relative;
     background: #000;
 }
@@ -931,12 +931,14 @@ body.lightbox-open {
 
 @media (max-width: 800px) {
     #ecosystem-reveal {
-        min-height: 170vh;
+        min-height: 220vh; /* Tighter scroll zone — matches animation duration on mobile */
     }
 
     .sticky-container {
-        position: relative;
-        top: auto;
+        /* Keep sticky so images stay visible while user scrolls — DO NOT set to relative */
+        position: sticky;
+        top: 0;
+        min-height: 100svh; /* Use svh for mobile browser chrome awareness */
     }
 
     .grid {

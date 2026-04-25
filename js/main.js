@@ -184,7 +184,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Calculate startScale to overcover the viewport
                 const startScale = Math.max(viewportWidth / (targetWidth || 1), viewportHeight / (targetWidth * 1.25 || 1)) * 1.5;
 
+                const isMobile = window.innerWidth <= 800;
+
                 // Shrink center image from oversized scale to native size.
+                // On mobile we extend the end offset so the image doesn't vanish early.
                 scroll(
                     animate(image, {
                         scale: [startScale, 1],
@@ -194,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }),
                     {
                         target: scrollSection,
-                        offset: ['start start', '80% end']
+                        offset: ['start start', isMobile ? '65% end' : '80% end']
                     }
                 );
 
@@ -208,15 +211,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 layers.forEach((layer, index) => {
                     // Skip animating if the layer is hidden via CSS (e.g., layer 1 on mobile)
                     if (window.getComputedStyle(layer).display === 'none') return;
-                    
-                    const endOffset = `${1 - (index * 0.05)} end`;
+
+                    // On mobile, spread the layer reveals across a larger portion of the section
+                    // so they don't all complete and vanish before the user finishes scrolling
+                    const staggerBase = isMobile ? 0.9 : 0.95;
+                    const endOffset = `${staggerBase - (index * 0.04)} end`;
 
                     // Fade in
                     scroll(
                         animate(layer, {
                             opacity: [0, 0, 1]
                         }, {
-                            offset: [0, 0.55, 1],
+                            offset: [0, 0.4, 1],
                             easing: cubicBezier(0.61, 1, 0.88, 1)
                         }),
                         {
@@ -230,7 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         animate(layer, {
                             scale: [0.4, 1]
                         }, {
-                            offset: [0.3, 1],
+                            offset: [0.25, 1],
                             easing: scaleEasings[index]
                         }),
                         {
