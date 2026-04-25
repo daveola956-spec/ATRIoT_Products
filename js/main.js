@@ -101,12 +101,12 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const getClosestIndex = () => {
-            const trackCenter = heroGalleryTrack.scrollTop + (heroGalleryTrack.clientHeight / 2);
+            const trackCenter = heroGalleryTrack.scrollLeft + (heroGalleryTrack.clientWidth / 2);
             let closestIndex = 0;
             let closestDistance = Number.POSITIVE_INFINITY;
 
             galleryItems.forEach((item, itemIndex) => {
-                const itemCenter = item.offsetTop + (item.clientHeight / 2);
+                const itemCenter = item.offsetLeft + (item.clientWidth / 2);
                 const distance = Math.abs(itemCenter - trackCenter);
                 if (distance < closestDistance) {
                     closestDistance = distance;
